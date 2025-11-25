@@ -698,10 +698,10 @@ engines::engine::engine( const engines& engines,
 	m_line( line ),
 	m_position( position ),
 	m_valid( true ),
+	m_likeYtDlp( false ),
 	m_supportingEngine( true ),
 	m_versionArgument( versionArgument ),
 	m_name( name ),
-	m_likeYtDlp( false ),
 	m_commandName( utility::platformIsLikeWindows() ? name + ".exe" : name )
 {
 	auto m = engines.findExecutable( m_commandName ) ;
@@ -841,6 +841,7 @@ engines::engine::engine( Logger& logger,
 	m_line( m_jsonObject.value( "VersionStringLine" ).toInt() ),
 	m_position( m_jsonObject.value( "VersionStringPosition" ).toInt() ),
 	m_valid( true ),
+	m_likeYtDlp( m_jsonObject.value( "LikeYoutubeDl" ).toBool() ),
 	m_autoUpdate( m_jsonObject.value( "AutoUpdate" ).toBool( true ) ),
 	m_archiveContainsFolder( m_jsonObject.value( "ArchiveContainsFolder" ).toBool() ),
 	m_versionArgument( m_jsonObject.value( "VersionArgument" ).toString() ),
@@ -857,13 +858,6 @@ engines::engine::engine( Logger& logger,
 
 			m_downloadUrl = m ;
 		}
-	}
-
-	if( m_name.startsWith( "yt-dlp" ) || m_name == "ytdl-patched" ){
-
-		m_likeYtDlp = true ;
-	}else{
-		m_likeYtDlp = false ;
 	}
 
 	if( m_name == "deno" || m_name == "quickjs" ){
@@ -2358,7 +2352,7 @@ engines::configDefaultEngine::configDefaultEngine( Logger&logger,const enginePat
 		aria2c::init( "aria2c","aria2c.json",logger,enginePath ) ;
 		wget::init( "wget","wget.json",logger,enginePath ) ;
 
-		if( utility::platformIsWindows7() ){
+		if( utility::platformisLegacyWindows() ){
 
 			quickjs::init( "quickjs","quickjs.json",logger,enginePath ) ;
 		}else{
